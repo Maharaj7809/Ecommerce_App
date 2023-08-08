@@ -48,11 +48,12 @@ const Checkout = () => {
       })),
     };
 
-    const response = await fetch("http://localhost:1337/api/orders", {
+    const response = await fetch("https://ecomerce-48vr.onrender.com/api/orders", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(requestBody),
     });
+    
     const session = await response.json();
     await stripe.redirectToCheckout({
       sessionId: session.id,
