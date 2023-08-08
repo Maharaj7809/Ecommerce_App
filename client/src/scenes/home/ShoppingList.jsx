@@ -21,7 +21,7 @@ const ShoppingList = () => {
 
   async function getItems() {
     const items = await fetch(
-      "http://localhost:1337/api/items?populate=image",
+      "https://ecomerce-48vr.onrender.com/api/items?populate=image",
       { method: "GET" }
     );
     const itemsJson = await items.json();
@@ -35,13 +35,13 @@ const ShoppingList = () => {
     getItems();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const topRatedItems = items.filter(
+  const topRatedItems = items?.filter(
     (item) => item.attributes.category === "topRated"
   );
-  const newArrivalsItems = items.filter(
+  const newArrivalsItems = items?.filter(
     (item) => item.attributes.category === "newArrivals"
   );
-  const bestSellersItems = items.filter(
+  const bestSellersItems = items?.filter(
     (item) => item.attributes.category === "bestSellers"
   );
 
@@ -78,19 +78,19 @@ const ShoppingList = () => {
         columnGap="1.33%"
       >
         {value === "all" &&
-          items.map((item) => (
+          items?.map((item) => (
             <Item item={item} key={`${item.name}-${item.id}`} />
           ))}
         {value === "newArrivals" &&
-          newArrivalsItems.map((item) => (
+          newArrivalsItems?.map((item) => (
             <Item item={item} key={`${item.name}-${item.id}`} />
           ))}
         {value === "bestSellers" &&
-          bestSellersItems.map((item) => (
+          bestSellersItems?.map((item) => (
             <Item item={item} key={`${item.name}-${item.id}`} />
           ))}
         {value === "topRated" &&
-          topRatedItems.map((item) => (
+          topRatedItems?.map((item) => (
             <Item item={item} key={`${item.name}-${item.id}`} />
           ))}
       </Box>
