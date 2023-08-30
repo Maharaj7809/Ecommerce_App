@@ -7,17 +7,94 @@ import { Typography } from "@mui/material";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useDispatch, useSelector } from "react-redux";
 import { setItems } from "../../state";
+import { IconButton, useTheme, Button } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import RemoveIcon from "@mui/icons-material/Remove";
+import { shades } from "../../theme";
+import { addToCart } from "../../state";
+import { useNavigate } from "react-router-dom";
 
-const ShoppingList = () => {
+
+
+const ShoppingList = ({pro}) => {
+
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const [value, setValue] = useState("all");
+  const [counta, setCounta] = useState(1);
+  const [isHovered, setIsHovered] = useState(false);
+
   const items = useSelector((state) => state.cart.items);
   const breakPoint = useMediaQuery("(min-width:600px)");
-   console.log("items",items);
+  
+  const {
+    palette: { neutral },
+  } = useTheme();
+  
+  const Card=({pro,width})=>{
+    return (
+      <Box width={width}>
+        <Box
+          position="relative"
+          onMouseOver={() => setIsHovered(true)}
+          onMouseOut={() => setIsHovered(false)}
+        >
+          <img
+            alt={pro.name}
+            width="300px"
+            height="300px"
+            src={pro.image}
+            // onClick={() => navigate(`/item/${pro.id}`)}
+            style={{ cursor: "pointer" }}
+          />
+          <Box
+            display={isHovered ? "block" : "none"}
+            position="absolute"
+            bottom="10%"
+            left="0"
+            width="100%"
+            padding="0 5%"
+          >
+            <Box display="flex" justifyContent="space-between">
+              <Box
+                display="flex"
+                alignItems="center"
+                backgroundColor={shades.neutral[100]}
+                borderRadius="3px"
+              >
+                <IconButton onClick={() => setCounta(Math.max(counta - 1, 1))}>
+                  <RemoveIcon />
+                </IconButton>
+                <Typography color={shades.primary[300]}>{counta}</Typography>
+                <IconButton onClick={() => setCounta(counta + 1)}>
+                  <AddIcon />
+                </IconButton>
+              </Box>
+              <Button sx={{ backgroundColor: shades.primary[300], color: "white" }} >
+                Add to Cart
+              </Button>
+            </Box>
+          </Box>
+        </Box>
+  
+        <Box mt="3px" display='flex' justifyContent='space-between'> 
+          <Typography variant="subtitle2" color={neutral.dark}>
+            {pro?.category
+              ?.replace(/([A-Z])/g, " $1")
+              .replace(/^./, (str) => str.toUpperCase())}
+          </Typography>
+          <Typography fontWeight="bold">${pro.price}</Typography>
+        </Box>
+      </Box>
+    );
+  };
+  
   const handleChange = (event, newValue) => {
     setValue(newValue);
 
   };
+
+
 
   async function getItems() {
     const items = await fetch(
@@ -26,27 +103,27 @@ const ShoppingList = () => {
     );
     const itemsJson = await items.json();
     dispatch(setItems(itemsJson.data));
-
-    console.log(itemsJson.data);
-    
   }
 
   useEffect(() => {
     getItems();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []); 
+
+
 
   const topRatedItems = items?.filter(
-    (item) => item.attributes.category === "topRated"
+     (item) => item.attributes.category === "topRated"
   );
   const newArrivalsItems = items?.filter(
-    (item) => item.attributes.category === "newArrivals"
+     (item) =>item.attributes.category === "newArrivals"
   );
   const bestSellersItems = items?.filter(
-    (item) => item.attributes.category === "bestSellers"
+     (item) =>item.attributes.category === "bestSellers"
   );
 
+
   return (
-    <Box width="80%" margin="80px auto">
+    <Box width="85%" margin="60px auto ">
       <Typography variant="h3" textAlign="center">
         Our Featured <b>Products</b>
       </Typography>
@@ -77,10 +154,17 @@ const ShoppingList = () => {
         rowGap="20px"
         columnGap="1.33%"
       >
+        { value==='all' && 
+          pro?.map((product) => (
+            <Card pro={product} key={product.id}  />
+
+            ))}
+
         {value === "all" &&
           items?.map((item) => (
             <Item item={item} key={`${item.name}-${item.id}`} />
           ))}
+
         {value === "newArrivals" &&
           newArrivalsItems?.map((item) => (
             <Item item={item} key={`${item.name}-${item.id}`} />
@@ -93,6 +177,8 @@ const ShoppingList = () => {
           topRatedItems?.map((item) => (
             <Item item={item} key={`${item.name}-${item.id}`} />
           ))}
+      
+      
       </Box>
     </Box>
   );

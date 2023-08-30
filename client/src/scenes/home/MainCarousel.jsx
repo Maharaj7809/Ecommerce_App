@@ -5,21 +5,10 @@ import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import { shades } from "../../theme";
 
-// imports all images from assets folder
-const importAll = (r) =>
-  r.keys().reduce((acc, item) => {
-    acc[item.replace("./", "")] = r(item);
-    return acc;
-  }, {});
 
 
 
-  
-export const heroTextureImports = importAll(
-  require.context("../../assets", false, /\.(png|jpe?g|svg)$/)
-);
-
-const MainCarousel = () => {
+const MainCarousel = ({pro}) => {
   const isNonMobile = useMediaQuery("(min-width:600px)");
   return (
     <Carousel
@@ -27,6 +16,8 @@ const MainCarousel = () => {
       showThumbs={false}
       showIndicators={false}
       showStatus={false}
+      autoPlay={true} 
+      interval={6000}
       renderArrowPrev={(onClickHandler, hasPrev, label) => (
         <IconButton
           onClick={onClickHandler}
@@ -58,11 +49,12 @@ const MainCarousel = () => {
         </IconButton>
       )}
     >
-      {Object.values(heroTextureImports).map((texture, index) => (
-        <Box key={`carousel-image-${index}`}>
-          <img
-            src={texture}
-            alt={`carousel-${index}`}
+      
+          {pro?.map((product,indx)=>(
+        <Box key={indx}>
+            <img
+            src={product.image}
+            alt={indx}
             style={{
               width: "100%",
               height: "700px",
@@ -70,6 +62,8 @@ const MainCarousel = () => {
               backgroundAttachment: "fixed",
             }}
           />
+       
+
           <Box
             color="white"
             padding="20px"
